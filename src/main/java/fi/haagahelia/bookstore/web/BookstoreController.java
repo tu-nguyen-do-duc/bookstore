@@ -1,10 +1,12 @@
 package fi.haagahelia.bookstore.web;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 
 import fi.haagahelia.bookstore.domain.Book;
 import fi.haagahelia.bookstore.domain.BookRepository;
+import fi.haagahelia.bookstore.domain.CategoryRepository;
 
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,10 +15,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 @Controller
 public class BookstoreController {
+    @Autowired
     private BookRepository repository;
+    @Autowired
+    private CategoryRepository crepository;
 
-    public BookstoreController(BookRepository repository) {
+    public BookstoreController(BookRepository repository, CategoryRepository crepository) {
         this.repository = repository;
+        this.crepository = crepository;
     }
 
     @RequestMapping(value = {"/", "/booklist"})
@@ -28,6 +34,7 @@ public class BookstoreController {
     @RequestMapping(value = "/addbook")
     public String addBook(Model model) {
         model.addAttribute("book", new Book());
+        model.addAttribute("categories", crepository.findAll());
         return "addbook";
     }
 
@@ -46,6 +53,7 @@ public class BookstoreController {
     @RequestMapping(value = "/edit/{id}")
     public String editBook(@PathVariable("id") Long bookId, Model model) {
         model.addAttribute("book", repository.findById(bookId));
+        model.addAttribute("categories", crepository.findAll());
         return "editbook";
     }
 }
